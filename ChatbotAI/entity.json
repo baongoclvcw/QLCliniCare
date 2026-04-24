@@ -1,0 +1,99 @@
+{"label": "KHOA", "pattern": "khoa nội"}
+{"label": "KHOA", "pattern": "khoa ngoại"}
+{"label": "KHOA", "pattern": "khoa nhi"}
+{"label": "KHOA", "pattern": "khoa tim mạch"}
+{"label": "KHOA", "pattern": "khoa tiêu hóa"}
+{"label": "KHOA", "pattern": "khoa da liễu"}
+{"label": "KHOA", "pattern": "khoa hô hấp"}
+{"label": "KHOA", "pattern": "khoa tai mũi họng"}
+{"label": "KHOA", "pattern": "khoa sản"}
+{"label": "KHOA", "pattern": "khoa răng hàm mặt"}
+{"label": "KHOA", "pattern": "khoa thần kinh"}
+{"label": "KHOA", "pattern": "khoa tiết niệu"}
+{"label": "KHOA", "pattern": "khoa nam khoa"}
+{"label": "KHOA", "pattern": "khoa ung bướu"}
+{"label": "KHOA", "pattern": "khoa chấn thương chỉnh hình"}
+{"label": "KHOA", "pattern": "khoa hồi sức cấp cứu"}
+{"label": "KHOA", "pattern": "khoa chẩn đoán hình ảnh"}
+{"label": "KHOA", "pattern": "khoa dinh dưỡng"}
+{"label": "KHOA", "pattern": "khoa vật lý trị liệu"}
+
+{"label": "TRIEU_CHUNG", "pattern": "đau đầu"}
+{"label": "TRIEU_CHUNG", "pattern": "chóng mặt"}
+{"label": "TRIEU_CHUNG", "pattern": "mất ngủ"}
+{"label": "TRIEU_CHUNG", "pattern": "co giật"}
+
+{"label": "TRIEU_CHUNG", "pattern": "đau ngực"}
+{"label": "TRIEU_CHUNG", "pattern": "tim đập nhanh"}
+
+{"label": "TRIEU_CHUNG", "pattern": "ho"}
+{"label": "TRIEU_CHUNG", "pattern": "khó thở"}
+
+{"label": "TRIEU_CHUNG", "pattern": "đau bụng"}
+{"label": "TRIEU_CHUNG", "pattern": "tiêu chảy"}
+{"label": "TRIEU_CHUNG", "pattern": "buồn nôn"}
+
+{"label": "TRIEU_CHUNG", "pattern": "nổi mẩn"}
+{"label": "TRIEU_CHUNG", "pattern": "ngứa da"}
+
+{"label": "TRIEU_CHUNG", "pattern": "đau họng"}
+{"label": "TRIEU_CHUNG", "pattern": "nghẹt mũi"}
+
+{"label": "TRIEU_CHUNG", "pattern": "đau răng"}
+{"label": "TRIEU_CHUNG", "pattern": "chảy máu nướu"}
+
+{"label": "TRIEU_CHUNG", "pattern": "tiểu buốt"}
+{"label": "TRIEU_CHUNG", "pattern": "tiểu nhiều"}
+
+{"label": "TRIEU_CHUNG", "pattern": "đau khớp"}
+{"label": "TRIEU_CHUNG", "pattern": "đau lưng"}
+
+{"label": "TRIEU_CHUNG", "pattern": "sụt cân"}
+{"label": "TRIEU_CHUNG", "pattern": "mệt mỏi"}
+
+{"label": "TRIEU_CHUNG", "pattern": "sốt cao"}
+{"label": "TRIEU_CHUNG", "pattern": "ớn lạnh"}
+{"label": "TRIEU_CHUNG", "pattern": "ra mồ hôi nhiều"}
+
+{"label": "TRIEU_CHUNG", "pattern": "mất vị giác"}
+{"label": "TRIEU_CHUNG", "pattern": "mất khứu giác"}
+
+{"label": "TRIEU_CHUNG", "pattern": "khàn tiếng"}
+{"label": "TRIEU_CHUNG", "pattern": "nuốt đau"}
+
+{"label": "TRIEU_CHUNG", "pattern": "tức ngực"}
+{"label": "TRIEU_CHUNG", "pattern": "khó thở khi nằm"}
+
+{"label": "TRIEU_CHUNG", "pattern": "đầy hơi"}
+{"label": "TRIEU_CHUNG", "pattern": "chướng bụng"}
+{"label": "TRIEU_CHUNG", "pattern": "ợ chua"}
+{"label": "TRIEU_CHUNG", "pattern": "táo bón"}
+
+{"label": "TRIEU_CHUNG", "pattern": "đi ngoài ra máu"}
+{"label": "TRIEU_CHUNG", "pattern": "phân đen"}
+
+{"label": "TRIEU_CHUNG", "pattern": "vàng da"}
+{"label": "TRIEU_CHUNG", "pattern": "nước tiểu sẫm màu"}
+
+{"label": "TRIEU_CHUNG", "pattern": "tiểu rắt"}
+{"label": "TRIEU_CHUNG", "pattern": "tiểu ra máu"}
+
+{"label": "TRIEU_CHUNG", "pattern": "yếu sinh lý"}
+{"label": "TRIEU_CHUNG", "pattern": "rối loạn cương dương"}
+
+{"label": "TRIEU_CHUNG", "pattern": "kinh nguyệt không đều"}
+{"label": "TRIEU_CHUNG", "pattern": "đau bụng kinh"}
+
+{"label": "TRIEU_CHUNG", "pattern": "đau vai gáy"}
+{"label": "TRIEU_CHUNG", "pattern": "cứng khớp buổi sáng"}
+
+{"label": "TRIEU_CHUNG", "pattern": "run tay"}
+{"label": "TRIEU_CHUNG", "pattern": "tê tay chân"}
+
+{"label": "TRIEU_CHUNG", "pattern": "giảm cân nhanh"}
+{"label": "TRIEU_CHUNG", "pattern": "chán ăn"}
+
+{"label": "TRIEU_CHUNG", "pattern": "phù chân"}
+{"label": "TRIEU_CHUNG", "pattern": "sưng hạch"}
+{"label": "TRIEU_CHUNG", "pattern": "sốt"}
+{"label": "TRIEU_CHUNG", "pattern": "sổ mũi"}

@@ -1,0 +1,120 @@
+text,intent
+
+xin chào,GREETING
+chào bạn,GREETING
+hello,GREETING
+hi,GREETING
+
+
+tôi bị đau đầu,SYMPTOM
+tôi bị chóng mặt,SYMPTOM
+tôi bị mất ngủ,SYMPTOM
+tôi bị co giật,SYMPTOM
+tôi bị đau ngực,SYMPTOM
+tôi bị tim đập nhanh,SYMPTOM
+tôi bị ho,SYMPTOM
+tôi bị khó thở,SYMPTOM
+tôi bị đau bụng,SYMPTOM
+tôi bị tiêu chảy,SYMPTOM
+tôi bị buồn nôn,SYMPTOM
+tôi bị nổi mẩn,SYMPTOM
+tôi bị ngứa da,SYMPTOM
+tôi bị đau họng,SYMPTOM
+tôi bị nghẹt mũi,SYMPTOM
+tôi bị đau răng,SYMPTOM
+tôi bị chảy máu nướu,SYMPTOM
+tôi bị tiểu buốt,SYMPTOM
+tôi bị tiểu nhiều,SYMPTOM
+tôi bị đau khớp,SYMPTOM
+tôi bị đau lưng,SYMPTOM
+tôi bị sụt cân,SYMPTOM
+tôi bị mệt mỏi,SYMPTOM
+tôi bị sốt cao,SYMPTOM
+tôi bị ớn lạnh,SYMPTOM
+tôi bị ra mồ hôi nhiều,SYMPTOM
+tôi bị mất vị giác,SYMPTOM
+tôi bị mất khứu giác,SYMPTOM
+tôi bị khàn tiếng,SYMPTOM
+tôi bị nuốt đau,SYMPTOM
+tôi bị tức ngực,SYMPTOM
+tôi bị khó thở khi nằm,SYMPTOM
+tôi bị đầy hơi,SYMPTOM
+tôi bị chướng bụng,SYMPTOM
+tôi bị ợ chua,SYMPTOM
+tôi bị táo bón,SYMPTOM
+tôi bị đi ngoài ra máu,SYMPTOM
+tôi bị phân đen,SYMPTOM
+tôi bị vàng da,SYMPTOM
+tôi bị nước tiểu sẫm màu,SYMPTOM
+tôi bị tiểu rắt,SYMPTOM
+tôi bị tiểu ra máu,SYMPTOM
+tôi bị yếu sinh lý,SYMPTOM
+tôi bị rối loạn cương dương,SYMPTOM
+tôi bị kinh nguyệt không đều,SYMPTOM
+tôi bị đau bụng kinh,SYMPTOM
+tôi bị đau vai gáy,SYMPTOM
+tôi bị cứng khớp buổi sáng,SYMPTOM
+tôi bị run tay,SYMPTOM
+tôi bị tê tay chân,SYMPTOM
+tôi bị giảm cân nhanh,SYMPTOM
+tôi bị chán ăn,SYMPTOM
+tôi bị phù chân,SYMPTOM
+tôi bị sưng hạch,SYMPTOM
+tôi nên khám khoa nào,SUGGEST_DEPARTMENT
+tôi bị bệnh này nên khám khoa gì,SUGGEST_DEPARTMENT
+triệu chứng này nên khám ở đâu,SUGGEST_DEPARTMENT
+
+
+tôi muốn khám khoa nội,DEPARTMENT
+tôi muốn khám khoa ngoại,DEPARTMENT
+tôi muốn khám khoa nhi,DEPARTMENT
+tôi muốn khám khoa tim mạch,DEPARTMENT
+tôi muốn khám khoa tiêu hóa,DEPARTMENT
+tôi muốn khám khoa da liễu,DEPARTMENT
+tôi muốn khám khoa hô hấp,DEPARTMENT
+tôi muốn khám khoa tai mũi họng,DEPARTMENT
+tôi muốn khám khoa sản,DEPARTMENT
+tôi muốn khám khoa răng hàm mặt,DEPARTMENT
+tôi muốn khám khoa thần kinh,DEPARTMENT
+tôi muốn khám khoa tiết niệu,DEPARTMENT
+tôi muốn khám khoa nam khoa,DEPARTMENT
+tôi muốn khám khoa ung bướu,DEPARTMENT
+tôi muốn khám khoa chấn thương chỉnh hình,DEPARTMENT
+tôi muốn khám khoa hồi sức cấp cứu,DEPARTMENT
+tôi muốn khám khoa chẩn đoán hình ảnh,DEPARTMENT
+tôi muốn khám khoa dinh dưỡng,DEPARTMENT
+tôi muốn khám khoa vật lý trị liệu,DEPARTMENT
+khoa nội là gì,DEPARTMENT_INFO
+khoa ngoại khám gì,DEPARTMENT_INFO
+khoa tim mạch chữa bệnh gì,DEPARTMENT_INFO
+khoa da liễu là gì,DEPARTMENT_INFO
+khoa thần kinh làm gì,DEPARTMENT_INFO
+
+khoa nội ở đâu,DEPARTMENT_LOCATION
+khoa ngoại ở đâu,DEPARTMENT_LOCATION
+khoa tim mạch ở tầng mấy,DEPARTMENT_LOCATION
+khoa da liễu nằm ở đâu,DEPARTMENT_LOCATION
+
+bệnh viện ở đâu,HOSPITAL_INFO
+địa chỉ bệnh viện là gì,HOSPITAL_INFO
+bệnh viện có số điện thoại không,HOSPITAL_INFO
+bệnh viện làm việc lúc nào,HOSPITAL_INFO
+giờ khám bệnh là gì,HOSPITAL_INFO
+địa chỉ bệnh viện ở đâu,HOSPITAL_INFO
+bệnh viện nằm ở đâu,HOSPITAL_INFO
+cho tôi xin địa chỉ bệnh viện,HOSPITAL_INFO
+
+bệnh viện làm việc lúc nào,HOSPITAL_INFO
+giờ làm việc của bệnh viện,HOSPITAL_INFO
+bệnh viện mở cửa mấy giờ,HOSPITAL_INFO
+
+số điện thoại bệnh viện là gì,HOSPITAL_INFO
+cho tôi số điện thoại bệnh viện,HOSPITAL_INFO
+liên hệ bệnh viện như thế nào,HOSPITAL_INFO
+tôi muốn đặt lịch khám,BOOK
+đặt lịch khám bệnh,BOOK
+cho tôi đặt lịch,BOOK
+
+tạm biệt,GOODBYE
+bye,GOODBYE
+hẹn gặp lại,GOODBYE
