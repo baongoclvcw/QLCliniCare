@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CliniCare – Quản lý khoa và bác sĩ</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #3b5bdb;
+    --blue-dark: #2f4ec4;
+    --blue-light: #eef0fb;
+    --text: #1a1a2e;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --bg: #f5f6fa;
+    --sidebar-w: 210px;
+    --red: #ef4444;
+  }
+
+  body { font-family: 'Be Vietnam Pro', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; font-size: 14px; }
+
+  /* Sidebar */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 210px;
+    height: 100vh;
+    background-color: #2F56C0;
+    color: white;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    z-index: 40;
+  }
+  .sidebar-header {
+    padding: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo-icon {
+    background-color: white;
+    color: #2F56C0;
+    border-radius: 8px;
+    padding: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .logo-text {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .sidebar-nav {
+    flex: 1;
+    padding: 12px;
+    overflow-y: auto;
+  }
+  .menu-item {
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 4px;
+    background: transparent;
+    border: none;
+    color: white;
+    text-align: left;
+    font-size: 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  .menu-item:hover { background-color: rgba(255, 255, 255, 0.1); }
+  .menu-item.active { background-color: rgba(255, 255, 255, 0.2); }
+  .sidebar-footer {
+    padding: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  .icon { width: 20px; height: 20px; }
+
+  /* MAIN */
+  .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* TOPBAR */
+  .topbar { background: white; border-bottom: 1px solid #e5e7eb; padding: 16px 24px; min-height: 64px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+  .topbar-left { display: flex; align-items: center; gap: 10px; }
+  .topbar-title { font-size: 17px; font-weight: 700; color: var(--text); }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .search-bar { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 6px; padding: 7px 14px; width: 280px; background: white; }
+  .search-bar input { border: none; background: none; outline: none; font-family: inherit; font-size: 13.5px; color: var(--text); width: 100%; }
+  .search-bar input::placeholder { color: #9ca3af; }
+  .admin-label { font-size: 14px; font-weight: 700; color: var(--text); }
+
+  /* BREADCRUMB */
+  .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+  .breadcrumb-link { color: var(--blue); cursor: pointer; font-weight: 500; }
+  .breadcrumb-link:hover { text-decoration: underline; }
+  .breadcrumb-sep { color: var(--muted); }
+  .breadcrumb-cur { color: var(--text); font-weight: 600; }
+
+  /* BACK BUTTON */
+  .btn-back { display: inline-flex; align-items: center; gap: 6px; background: white; border: 1px solid var(--border); border-radius: 7px; padding: 7px 14px; font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer; color: var(--text); transition: background 0.15s; }
+  .btn-back:hover { background: var(--bg); }
+  .btn-back svg { width: 14px; height: 14px; }
+
+  /* CONTENT */
+  .content { padding: 28px 32px; flex: 1; background: var(--bg); }
+
+  /* VIEWS */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* Stat cards */
+  .stat-cards { display: flex; gap: 16px; margin-bottom: 20px; }
+  .stat-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 18px 28px; min-width: 200px; }
+  .stat-card .label { font-size: 13px; color: var(--muted); font-weight: 400; margin-bottom: 6px; }
+  .stat-card .value { font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; }
+  .stat-card .value.blue { color: var(--blue); }
+
+  /* Info cards (bác sĩ header) */
+  .info-cards { display: flex; gap: 14px; margin-bottom: 24px; }
+  .info-card { padding: 16px 26px; background: white; border: 1px solid var(--border); border-radius: 8px; min-width: 190px; }
+  .info-card .label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+  .info-card .value { font-size: 15px; font-weight: 600; color: var(--text); }
+
+  /* Table */
+  .table-section { background: white; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .table-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; }
+  .table-header h2 { font-size: 15px; font-weight: 600; color: var(--text); }
+  .btn-add { display: inline-flex; align-items: center; gap: 7px; background: var(--blue); color: white; border: none; border-radius: 7px; padding: 9px 16px; font-size: 13.5px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background 0.15s; }
+  .btn-add:hover { background: var(--blue-dark); }
+  .btn-add svg { width: 14px; height: 14px; }
+
+  td.actions { text-align: right; }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th { padding: 10px 20px; text-align: left; font-size: 11.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: white; }
+  tbody tr { border-bottom: 1px solid #f3f4f6; transition: background 0.1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #f5f7ff; }
+  tbody td { padding: 14px 20px; font-size: 14px; vertical-align: middle; }
+  td.stt { color: var(--text); font-weight: 400; width: 60px; }
+  td.ma-khoa { color: var(--text); font-weight: 400; }
+  td.ten-khoa { font-weight: 700; color: var(--text); }
+  td.truong-khoa { color: #374151; }
+  td.so-bac-si { color: var(--text); }
+  td.name { font-weight: 700; color: var(--text); }
+  td.specialty { color: #4b5563; }
+  td.phone { color: var(--text); }
+  td.email { color: #4b5563; font-size: 13.5px; }
+  tbody tr.row-link { cursor: pointer; }
+  tbody tr.row-link:hover { background: #eef2ff; }
+  tbody tr.row-link:hover td.ten-khoa,
+  tbody tr.row-link:hover td.name { color: var(--blue); }
+
+  /* Pagination */
+  .pagination { display: flex; justify-content: flex-end; align-items: center; gap: 6px; padding: 14px 20px; border-top: 1px solid var(--border); }
+  .page-btn { min-width: 34px; height: 34px; border-radius: 6px; border: 1px solid var(--border); background: white; color: var(--text); font-size: 13.5px; font-weight: 500; font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0 10px; transition: all 0.15s; }
+  .page-btn:hover { background: #f3f4f6; }
+  .page-btn.active { background: var(--blue); color: white; border-color: var(--blue); font-weight: 600; }
+  .page-btn.nav { color: var(--muted); }
+
+  /* ── DOCTOR DETAIL ── */
+  .detail-cards { display: flex; flex-direction: column; gap: 18px; }
+  .card { background: #fff; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,.05); padding: 26px 30px; }
+  .doc-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+  .doc-name { font-size: 1.2rem; font-weight: 700; }
+  .doc-sub { font-size: .84rem; color: var(--muted); margin-top: 4px; }
+  .doc-actions { display: flex; gap: 8px; }
+  .btn-outline { display: inline-flex; align-items: center; background: white; color: var(--blue); border: 1.5px solid var(--blue); border-radius: 8px; padding: 7px 15px; font-size: .82rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .15s; }
+  .btn-outline:hover { background: var(--blue-light); }
+
+  .info-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px 28px; }
+  .info-label { font-size: .76rem; font-weight: 600; color: var(--muted); margin-bottom: 4px; }
+  .info-value { font-size: .875rem; font-weight: 500; }
+  .section-title { font-size: .95rem; font-weight: 700; margin-bottom: 16px; }
+  .supp-grid { display: flex; flex-direction: column; gap: 12px; }
+  .supp-label { font-size: .76rem; font-weight: 600; color: var(--muted); margin-bottom: 3px; }
+  .supp-value { font-size: .875rem; }
+
+  /* ── CALENDAR DATEPICKER ── */
+  .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .cal-nav-title { font-size: 15px; font-weight: 700; color: var(--text); }
+  .cal-nav-btn { width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--border); background: white; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: background 0.15s; font-family: inherit; }
+  .cal-nav-btn:hover { background: var(--bg); color: var(--text); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
+  .cal-dow { text-align: center; font-size: 11.5px; font-weight: 700; color: var(--muted); padding: 4px 0; }
+  .cal-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 13.5px; font-weight: 500; cursor: pointer; color: var(--text); transition: all .15s; border: 1.5px solid transparent; position: relative; }
+  .cal-day:hover:not(.cal-empty):not(.cal-past) { background: var(--blue-light); color: var(--blue); border-color: var(--blue); }
+  .cal-day.cal-today { border-color: var(--blue); color: var(--blue); font-weight: 700; }
+  .cal-day.cal-past { color: #d1d5db; cursor: not-allowed; }
+  .cal-day.cal-empty { cursor: default; }
+  .cal-day.cal-has-schedule::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; border-radius: 50%; background: var(--blue); }
+  .cal-day.cal-selected { background: var(--blue); color: white !important; border-color: var(--blue); }
+  .cal-day.cal-selected::after { background: white; }
+
+  /* ── SCHEDULE POPUP ── */
+  .sched-popup-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.45); z-index: 300; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+  .sched-popup-overlay.open { display: flex; }
+  .sched-popup { background: white; border-radius: 16px; width: 520px; max-width: 95vw; box-shadow: 0 24px 64px rgba(0,0,0,0.22); animation: modalIn 0.25s cubic-bezier(.34,1.4,.64,1); overflow: hidden; }
+  .sched-popup-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .sched-popup-header h3 { font-size: 15.5px; font-weight: 700; color: var(--text); }
+  .sched-popup-header p { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+  .sched-popup-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 18px; }
+  .sched-popup-footer { padding: 14px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; background: #fafafa; }
+
+  /* Repeat row */
+  .repeat-row { display: flex; align-items: center; gap: 12px; }
+  .repeat-label { font-size: 13px; font-weight: 600; color: var(--muted); min-width: 28px; }
+  .dow-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .dow-chip { width: 34px; height: 34px; border-radius: 50%; border: none; background: #374151; color: white; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; font-family: inherit; }
+  .dow-chip.active { background: var(--blue); }
+  .dow-chip:hover { opacity: .85; }
+
+  /* Ends row */
+  .ends-section { display: flex; flex-direction: column; gap: 10px; }
+  .ends-label { font-size: 13px; font-weight: 600; color: var(--text); }
+  .ends-option { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--text); }
+  .ends-option input[type=radio] { accent-color: var(--blue); width: 16px; height: 16px; cursor: pointer; }
+  .ends-date-input { border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 12px; font-size: 13px; font-family: inherit; color: var(--text); outline: none; transition: border-color .15s; background: white; cursor: pointer; }
+  .ends-date-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,91,219,.1); }
+  .ends-date-input:disabled { background: #f3f4f6; color: var(--muted); cursor: not-allowed; }
+  .slots-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; margin-top: 4px; }
+  .slot { height: 40px; border: 1px solid #D1D5DC; border-radius: 6px; background: white; color: #374151; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; font-family: inherit; display: flex; align-items: center; justify-content: center; }
+  .slot:hover:not(.booked) { border-color: var(--blue); color: var(--blue); }
+  .slot.booked { background: #f3f4f6; color: #9ca3af; text-decoration: line-through; cursor: not-allowed; border-color: #e5e7eb; }
+  .legend { display: flex; gap: 20px; margin-top: 14px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .legend-dot { width: 28px; height: 20px; border-radius: 4px; border: 1px solid #D1D5DC; background: white; }
+  .legend-dot.booked { background: #f3f4f6; border-color: #e5e7eb; }
+
+  /* MODALS */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.45); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+  .modal-overlay.open { display: flex; }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(-18px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+  .modal-add { background: white; border-radius: 16px; width: 500px; max-width: 95vw; box-shadow: 0 24px 64px rgba(0,0,0,0.2); overflow: hidden; animation: modalIn 0.25s cubic-bezier(.34,1.4,.64,1); }
+  .modal-add-header { padding: 22px 24px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .modal-add-header h3 { font-size: 16px; font-weight: 700; color: var(--text); }
+  .modal-add-header p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: var(--bg); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: background 0.15s; flex-shrink: 0; }
+  .modal-close:hover { background: #e5e7eb; color: var(--text); }
+  .modal-close svg { width: 15px; height: 15px; }
+  .modal-add-body { padding: 22px 24px; display: flex; flex-direction: column; gap: 16px; }
+  .form-row { display: flex; gap: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 7px; flex: 1; }
+  .form-group label { font-size: 12.5px; font-weight: 600; color: var(--text); }
+  .form-group label .req { color: var(--red); margin-left: 2px; }
+  .form-group input, .form-group select { border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 13px; font-size: 13.5px; font-family: inherit; color: var(--text); outline: none; transition: border-color 0.15s, box-shadow 0.15s; background: white; width: 100%; }
+  .form-group input:focus, .form-group select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,91,219,0.1); }
+  .form-group input::placeholder { color: #9ca3af; }
+  .form-group input.error, .form-group select.error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(239,68,68,0.1); }
+  .modal-add-footer { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 24px; border-top: 1px solid var(--border); background: #fafafa; }
+  .btn-cancel { padding: 9px 18px; border-radius: 8px; border: 1px solid var(--border); background: white; font-size: 13.5px; font-weight: 500; font-family: inherit; cursor: pointer; color: var(--text); transition: background 0.15s; }
+  .btn-cancel:hover { background: var(--bg); }
+  .btn-submit { display: inline-flex; align-items: center; gap: 7px; padding: 10px 20px; border-radius: 8px; border: none; background: var(--blue); color: white; font-size: 13.5px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background 0.15s; }
+  .btn-submit:hover { background: var(--blue-dark); }
+  .btn-submit svg { width: 14px; height: 14px; }
+
+  .modal-confirm { background: white; border-radius: 16px; width: 370px; max-width: 95vw; box-shadow: 0 24px 64px rgba(0,0,0,0.2); overflow: hidden; animation: modalIn 0.25s cubic-bezier(.34,1.4,.64,1); }
+  .confirm-body { padding: 30px 26px 22px; text-align: center; }
+  .confirm-icon { width: 58px; height: 58px; border-radius: 50%; background: #fff1f1; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+  .confirm-icon svg { width: 26px; height: 26px; color: var(--red); }
+  .confirm-body h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+  .confirm-body p { font-size: 13.5px; color: var(--muted); line-height: 1.65; }
+  .confirm-footer { display: flex; justify-content: center; gap: 10px; padding: 16px 24px; border-top: 1px solid var(--border); }
+  .btn-danger { padding: 10px 24px; border-radius: 8px; border: none; background: var(--red); color: white; font-size: 13.5px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background 0.15s; }
+  .btn-danger:hover { background: #dc2626; }
+
+  /* Edit doctor modal */
+  .modal-edit { background: white; border-radius: 16px; width: 520px; max-width: 95vw; box-shadow: 0 24px 64px rgba(0,0,0,0.2); overflow: hidden; animation: modalIn 0.25s cubic-bezier(.34,1.4,.64,1); }
+
+  /* TOAST */
+  .toast { position: fixed; top: 20px; right: 28px; z-index: 400; display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-radius: 10px; font-size: 13.5px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,.10); transform: translateY(-16px); opacity: 0; transition: all 0.3s cubic-bezier(.34,1.4,.64,1); pointer-events: none; min-width: 260px; }
+  .toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+  .toast-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+  .toast-icon { display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #16a34a; }
+  .toast-icon svg { width: 18px; height: 18px; }
+  .toast-msg { flex: 1; }
+  .toast-close { background: none; border: none; cursor: pointer; color: #16a34a; display: flex; align-items: center; padding: 0; opacity: 0.7; transition: opacity 0.15s; flex-shrink: 0; }
+  .toast-close:hover { opacity: 1; }
+  /* TIMELINE */
+  .timeline-track { position: relative; height: 28px; cursor: pointer; user-select: none; }
+  .timeline-bg { position: absolute; inset: 6px 0; background: #e9edf8; border-radius: 6px; }
+  .timeline-bar { position: absolute; top: 6px; height: 16px; background: var(--blue); border-radius: 4px; cursor: grab; transition: filter 0.1s; z-index: 2; }
+  .timeline-bar:hover { filter: brightness(1.1); }
+  .timeline-bar:active { cursor: grabbing; }
+  .timeline-handle { position: absolute; top: 2px; width: 10px; height: 24px; background: white; border: 2px solid var(--blue); border-radius: 4px; cursor: ew-resize; transform: translateX(-50%); z-index: 3; box-shadow: 0 1px 4px rgba(59,91,219,0.25); transition: box-shadow 0.15s; }
+  .timeline-handle:hover { box-shadow: 0 2px 8px rgba(59,91,219,0.4); }
+
+  /* Saved schedule display */
+  .saved-schedules { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+  .saved-schedule-row { display: flex; align-items: center; justify-content: space-between; background: var(--blue-light); border: 1px solid #c7d2f6; border-radius: 10px; padding: 12px 16px; }
+  .saved-schedule-info { display: flex; align-items: center; gap: 12px; }
+  .saved-schedule-date { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .saved-schedule-times { display: flex; gap: 8px; }
+  .saved-schedule-badge { font-size: 12px; font-weight: 600; color: var(--blue); background: white; border: 1px solid #c7d2f6; border-radius: 20px; padding: 2px 10px; }
+  .saved-schedule-repeat { font-size: 12px; color: var(--muted); margin-left: 4px; }
+  .btn-edit-sched { display: inline-flex; align-items: center; gap: 5px; background: white; color: var(--blue); border: 1.5px solid var(--blue); border-radius: 7px; padding: 5px 12px; font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all .15s; white-space: nowrap; flex-shrink: 0; }
+  .btn-edit-sched:hover { background: var(--blue-light); }
+  .btn-edit-sched svg { width: 12px; height: 12px; }
+  .cal-no-schedule { font-size: 13px; color: var(--muted); margin-bottom: 14px; font-style: italic; }
+
+  /* Work hours display */
+  .work-hours-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px; }
+  .work-hours-day { background: var(--blue-light); border: 1px solid #c7d2f6; border-radius: 10px; padding: 12px 10px; text-align: center; }
+  .work-hours-day-label { font-size: 12px; font-weight: 700; color: var(--blue); margin-bottom: 8px; }
+  .work-hours-session { font-size: 11.5px; color: var(--text); margin-bottom: 4px; }
+  .work-hours-session span { display: block; font-weight: 600; color: var(--text); font-size: 12px; }
+  .work-hours-session .session-label { font-weight: 500; color: var(--muted); font-size: 11px; }
+
+  /* textarea in form */
+  .form-group textarea { border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 13px; font-size: 13.5px; font-family: inherit; color: var(--text); outline: none; transition: border-color 0.15s, box-shadow 0.15s; background: white; width: 100%; resize: vertical; min-height: 70px; }
+  .form-group textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,91,219,0.1); }
+  .form-group textarea::placeholder { color: #9ca3af; }
+  .form-group textarea.error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(239,68,68,0.1); }
+  .modal-add-wide { width: 680px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo-icon">
+      <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+      </svg>
+    </div>
+    <h1 class="logo-text">CliniCare</h1>
+  </div>
+  <nav class="sidebar-nav">
+    <button class="menu-item" onclick="window.location.href='trangchuadmin.html'">Trang chủ</button>
+    <button class="menu-item" onclick="window.location.href='quanlylichhenadmin.html'">Quản lý lịch hẹn</button>
+    <button class="menu-item active" onclick="window.location.href='khoavabacsi.html'">Quản lý khoa và bác sĩ</button>
+  </nav>
+  <div class="sidebar-footer">
+    <button type="button" class="menu-item" onclick="localStorage.removeItem('accessToken');localStorage.removeItem('user');location.href='../dangnhap.html'">Đăng xuất</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title" id="topbarTitle">Quản lý khoa và bác sĩ</div>
+    </div>
+    <div class="topbar-right">
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Tìm kiếm..." oninput="handleSearch()">
+      </div>
+      <span class="admin-label">Quản trị viên</span>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- VIEW 1: DANH SÁCH KHOA                                -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div id="viewKhoa" class="view active">
+    <div class="content">
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="label">Tổng số khoa</div>
+          <div class="value" id="totalKhoa">10</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Tổng số bác sĩ</div>
+          <div class="value blue" id="totalBacSi">59</div>
+        </div>
+      </div>
+
+      <div class="table-section">
+        <div class="table-header">
+          <h2>Danh sách khoa</h2>
+          <button class="btn-add" onclick="openAddKhoaModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Thêm khoa
+          </button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:60px">STT</th>
+              <th>MÃ KHOA</th>
+              <th>TÊN KHOA</th>
+              <th>TRƯỞNG KHOA</th>
+              <th>SỐ BÁC SĨ</th>
+            </tr>
+          </thead>
+          <tbody id="khoaTableBody"></tbody>
+        </table>
+        <div class="pagination">
+          <button class="page-btn nav">Trước</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn nav">Sau</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- VIEW 2: DANH SÁCH BÁC SĨ TRONG KHOA                  -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div id="viewBacSi" class="view">
+    <div class="content">
+      <div style="margin-bottom:16px; display:flex; align-items:center; gap:12px;">
+        <button class="btn-back" onclick="goToKhoa()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Quay lại
+        </button>
+        <div class="breadcrumb">
+          <span class="breadcrumb-link" onclick="goToKhoa()">Danh sách khoa</span>
+          <span class="breadcrumb-sep">›</span>
+          <span class="breadcrumb-cur" id="breadKhoa"></span>
+        </div>
+      </div>
+
+      <div class="info-cards" id="khoaInfoCards"></div>
+
+      <div class="table-section">
+        <div class="table-header">
+          <h2>Danh sách bác sĩ (<span id="doctorCount">0</span>)</h2>
+          <button class="btn-add" onclick="openAddDoctorModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Thêm bác sĩ
+          </button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:60px">STT</th>
+              <th>HỌ TÊN</th>
+              <th>CHUYÊN KHOA</th>
+              <th>SỐ ĐIỆN THOẠI</th>
+              <th>EMAIL</th>
+            </tr>
+          </thead>
+          <tbody id="doctorTableBody"></tbody>
+        </table>
+        <div class="pagination">
+          <button class="page-btn nav">Trước</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn nav">Sau</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- VIEW 3: CHI TIẾT BÁC SĨ                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div id="viewChiTiet" class="view">
+    <div class="content">
+      <div style="margin-bottom:16px; display:flex; align-items:center; gap:12px;">
+        <button class="btn-back" onclick="goToBacSi()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Quay lại
+        </button>
+        <div class="breadcrumb">
+          <span class="breadcrumb-link" onclick="goToKhoa()">Danh sách khoa</span>
+          <span class="breadcrumb-sep">›</span>
+          <span class="breadcrumb-link" onclick="goToBacSi()" id="breadKhoa2"></span>
+          <span class="breadcrumb-sep">›</span>
+          <span class="breadcrumb-cur" id="breadBacSi"></span>
+        </div>
+      </div>
+
+      <div class="detail-cards">
+        <!-- Thông tin chính -->
+        <div class="card">
+          <div class="doc-header">
+            <div>
+              <div class="doc-name" id="detailName"></div>
+              <div class="doc-sub" id="detailSub"></div>
+            </div>
+            <div class="doc-actions" style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button type="button" class="btn-outline" onclick="openEditModal()">Chỉnh sửa</button>
+            </div>
+          </div>
+          <div class="info-grid" id="detailInfoGrid"></div>
+        </div>
+
+        <!-- Thông tin bổ sung -->
+        <div class="card">
+          <div class="section-title">Thông tin bổ sung</div>
+          <div class="supp-grid" id="detailSupp"></div>
+        </div>
+
+        <!-- Khung giờ làm việc -->
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+            <div class="section-title" style="margin-bottom:0;">Khung giờ làm việc</div>
+            <button class="btn-outline" style="font-size:12px;padding:6px 14px;" onclick="void openWorkHoursPopup().catch(function(e){console.error(e);alert(e.message||'Không mở được popup');})">Chỉnh sửa giờ làm việc</button>
+          </div>
+          <div id="workHoursDisplay"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: THÊM KHOA ═══ -->
+<div class="modal-overlay" id="modalAddKhoa">
+  <div class="modal-add">
+    <div class="modal-add-header">
+      <div><h3>Thêm khoa mới</h3><p>Điền thông tin để thêm khoa vào hệ thống</p></div>
+      <button class="modal-close" onclick="closeModal('modalAddKhoa')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-add-body">
+      <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="form-group"><label>Tên khoa <span class="req">*</span></label><input type="text" id="inputTenKhoa" placeholder="VD: Thần kinh"></div>
+        <div class="form-group"><label>Mã khoa <span class="req">*</span></label><input type="text" id="inputMaKhoa" placeholder="VD: TK" maxlength="10"></div>
+        <div class="form-group"><label>Trưởng khoa</label><input type="text" id="inputTruongKhoa" placeholder="VD: BS. Nguyễn Văn A"></div>
+        <div class="form-group"><label>Số bác sĩ</label><input type="text" id="inputSoBacSi" placeholder="VD: 5" disabled title="Tự tính theo danh sách bác sĩ"></div>
+      </div>
+    </div>
+    <div class="modal-add-footer">
+      <button class="btn-cancel" onclick="closeModal('modalAddKhoa')">Hủy</button>
+      <button class="btn-submit" onclick="addKhoa()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Thêm khoa
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: THÊM BÁC SĨ ═══ -->
+<div class="modal-overlay" id="modalAddDoctor">
+  <div class="modal-add modal-add-wide">
+    <div class="modal-add-header">
+      <div><h3>Thêm bác sĩ mới</h3><p id="addDoctorSubtitle">Điền đầy đủ thông tin bác sĩ</p></div>
+      <button class="modal-close" onclick="closeModal('modalAddDoctor')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-add-body">
+      <!-- Hàng 1: Họ tên -->
+      <p style="font-size:12px;color:var(--muted);margin:0 0 12px;">Mã bác sĩ do hệ thống tự tạo khi lưu.</p>
+      <div class="form-row">
+        <div class="form-group" style="flex:1">
+          <label>Họ và tên <span class="req">*</span></label>
+          <input type="text" id="inputName" placeholder="VD: BS. Nguyễn Văn An">
+        </div>
+      </div>
+      <!-- Hàng 2: Ngày sinh + Giới tính -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Ngày sinh <span class="req">*</span></label>
+          <input type="text" id="inputNgaySinh" placeholder="VD: 15/03/1990">
+          <span id="ngaySinhError" style="display:none; color:var(--red); font-size:12px; margin-top:2px;"></span>
+        </div>
+        <div class="form-group">
+          <label>Giới tính <span class="req">*</span></label>
+          <select id="inputGioiTinh">
+            <option value="">-- Chọn giới tính --</option>
+            <option value="Nam">Nam</option>
+            <option value="Nữ">Nữ</option>
+          </select>
+        </div>
+      </div>
+      <!-- Hàng 3: SĐT + Email -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Số điện thoại <span class="req">*</span></label>
+          <input type="text" id="inputPhone" placeholder="VD: 0901234567" maxlength="10" inputmode="numeric">
+        </div>
+        <div class="form-group">
+          <label>Email <span class="req">*</span></label>
+          <input type="email" id="inputEmail" placeholder="VD: bsA@clinicare.vn">
+        </div>
+      </div>
+      <!-- Hàng 4: Chuyên khoa + Chức vụ -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Chuyên khoa <span class="req">*</span></label>
+          <select id="inputSpecialty">
+            <option value="">-- Chọn chuyên khoa --</option>
+            <option>Nội tổng quát</option><option>Nội khoa</option><option>Nội tiết</option>
+            <option>Ngoại tổng quát</option><option>Ngoại thần kinh</option>
+            <option>Nhi tổng quát</option><option>Tim mạch</option>
+            <option>Tiêu hóa</option><option>Da liễu</option><option>Tai mũi họng</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Chức vụ <span class="req">*</span></label>
+          <select id="inputChucVu">
+            <option value="">-- Chọn chức vụ --</option>
+            <option value="Bác sĩ">Bác sĩ</option>
+            <option value="Phó khoa">Phó khoa</option>
+            <option value="Trưởng khoa">Trưởng khoa</option>
+          </select>
+        </div>
+      </div>
+      <!-- Hàng 5: Số năm KN + Địa chỉ -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Số năm kinh nghiệm <span class="req">*</span></label>
+          <input type="number" id="inputNamKN" placeholder="VD: 5" min="0" max="60">
+        </div>
+        <div class="form-group">
+          <label>Địa chỉ <span class="req">*</span></label>
+          <input type="text" id="inputDiaChi" placeholder="VD: Quận 1, TP. HCM">
+        </div>
+      </div>
+      <!-- Hàng 6: Mô tả kinh nghiệm -->
+      <div class="form-group">
+        <label>Mô tả kinh nghiệm <span class="req">*</span></label>
+        <textarea id="inputMoTa" placeholder="VD: Chuyên sâu về nhi khoa tổng quát và dinh dưỡng trẻ em, có nhiều năm kinh nghiệm điều trị các bệnh lý nhi phức tạp."></textarea>
+      </div>
+    </div>
+    <div class="modal-add-footer">
+      <button class="btn-cancel" onclick="closeModal('modalAddDoctor')">Hủy</button>
+      <button class="btn-submit" onclick="addDoctor()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Thêm bác sĩ
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: CHỈNH SỬA BÁC SĨ ═══ -->
+<div class="modal-overlay" id="modalEditDoctor">
+  <div class="modal-add modal-edit">
+    <div class="modal-add-header">
+      <div><h3>Chỉnh sửa thông tin bác sĩ</h3><p id="editDoctorSubtitle"></p></div>
+      <button class="modal-close" onclick="closeModal('modalEditDoctor')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-add-body">
+      <div class="form-row">
+        <div class="form-group"><label>Họ và tên</label><input type="text" id="editName"></div>
+        <div class="form-group"><label>Số điện thoại</label><input type="text" id="editPhone" maxlength="10" inputmode="numeric"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Chuyên khoa</label>
+          <select id="editSpecialty">
+            <option>Nội tổng quát</option><option>Nội khoa</option><option>Nội tiết</option>
+            <option>Ngoại tổng quát</option><option>Tim mạch</option><option>Nhi tổng quát</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Chức vụ</label>
+          <select id="editChucVu"><option>Bác sĩ</option><option>Phó khoa</option><option>Trưởng khoa</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label>Mô tả kinh nghiệm</label><input type="text" id="editDesc"></div>
+    </div>
+    <div class="modal-add-footer">
+      <button class="btn-cancel" onclick="closeModal('modalEditDoctor')">Hủy</button>
+      <button class="btn-submit" onclick="saveEdit()">Lưu thay đổi</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: LỊCH LÀM VIỆC THEO NGÀY ═══ -->
+<div class="sched-popup-overlay" id="schedPopup">
+  <div class="sched-popup">
+    <div class="sched-popup-header">
+      <div>
+        <h3 id="schedPopupTitle">Lịch làm việc</h3>
+        <p id="schedPopupSub"></p>
+      </div>
+      <button class="modal-close" onclick="closeSchedPopup()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="sched-popup-body">
+      <!-- Timeline -->
+      <div id="popupWorkScheduleContainer"></div>
+
+      <!-- Repeat On -->
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;">Lặp lịch</div>
+        <div class="repeat-row">
+          <span class="repeat-label">Vào</span>
+          <div class="dow-chips" id="repeatChips"></div>
+        </div>
+      </div>
+
+      <!-- Ends -->
+      <div class="ends-section">
+        <div class="ends-label">Kết thúc</div>
+        <label class="ends-option">
+          <input type="radio" name="endsOption" value="never" checked onchange="onEndsChange(this)">
+          <span>Không bao giờ</span>
+        </label>
+        <label class="ends-option">
+          <input type="radio" name="endsOption" value="on" onchange="onEndsChange(this)">
+          <span>Vào ngày</span>
+          <input type="date" class="ends-date-input" id="endsDateInput" disabled>
+        </label>
+      </div>
+    </div>
+    <div class="sched-popup-footer">
+      <button type="button" class="btn-cancel" onclick="closeSchedPopup()">Hủy</button>
+      <button type="button" class="btn-submit" onclick="saveSchedPopup()" style="font-size:13px;padding:9px 20px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Lưu lịch
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast toast-success" id="toast">
+  <div class="toast-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  </div>
+  <span class="toast-msg" id="toastMsg"></span>
+  <button class="toast-close" onclick="hideToast()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+</div>
+
+<script src="../assets/js/shared/config.js"></script>
+<script src="../assets/js/shared/api.js"></script>
+<script src="assets/js/khoavabacsi.js"></script>
+</body>
+</html>

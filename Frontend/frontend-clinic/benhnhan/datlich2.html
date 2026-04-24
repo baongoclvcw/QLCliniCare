@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CliniCare - Hệ thống quản lý bệnh viện</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F2F2F2;
+      color: #111827;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 210px;
+      height: 100vh;
+      background: #2F56C0;
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: white;
+      color: #2F56C0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+    }
+
+    .logo-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    .logo-text {
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .nav-menu {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding: 12px;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-logout {
+      margin-top: auto;
+      padding: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .nav-item.logout {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .nav-item.logout:hover {
+      background: rgba(255, 100, 100, 0.2);
+      color: #fca5a5;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      border-radius: 8px;
+      color: white;
+      transition: background-color 0.2s;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-item.active {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    /* Header Styles */
+    .header {
+      position: fixed;
+      left: 210px;
+      top: 0;
+      right: 0;
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      z-index: 30;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-left svg {
+      width: 20px;
+      height: 20px;
+      fill: #374151;
+      stroke: #374151;
+      stroke-width: 1;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .search-bar {
+      position: relative;
+    }
+
+    .search-bar input {
+      width: 300px;
+      height: 36px;
+      padding-left: 40px;
+      padding-right: 16px;
+      border-radius: 18px;
+      background: #F3F4F6;
+      border: 1px solid #E5E7EB;
+      font-size: 14px;
+      color: #374151;
+    }
+
+    .search-bar input::placeholder {
+      color: #9CA3AF;
+    }
+
+    .search-bar input:focus {
+      outline: none;
+    }
+
+    .search-bar svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      stroke: #9CA3AF;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .header-icon {
+      color: #6B7280;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .header-icon:hover {
+      color: #111827;
+    }
+
+    .header-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      fill: none;
+    }
+
+    .header-username {
+      font-size: 14px;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    /* Main Content Styles */
+    .main-content {
+      margin-left: 210px;
+      margin-top: 59px;
+      height: calc(100vh - 59px);
+      overflow-y: auto;
+      background: #F2F2F2;
+    }
+
+    .content-wrapper {
+      padding: 32px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .page-title {
+      margin-bottom: 24px;
+    }
+
+    .page-title h1 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+
+    .page-title p {
+      font-size: 14px;
+      color: #6B7280;
+    }
+
+    .form-container {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      padding: 32px;
+    }
+
+    .form-section {
+      margin-bottom: 32px;
+    }
+
+    .form-section:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #E5E7EB;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-field label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    .required {
+      color: #EF4444;
+    }
+
+    .optional {
+      font-size: 12px;
+      color: #9CA3AF;
+      font-weight: 400;
+    }
+
+    .form-input {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px;
+      border: 1px solid #D1D5DC;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #111827;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #3152B8;
+      box-shadow: 0 0 0 3px rgba(49, 82, 184, 0.1);
+    }
+
+    .form-input::placeholder {
+      color: #9CA3AF;
+    }
+
+    .form-select {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px;
+      border: 1px solid #D1D5DC;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #111827;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .form-select:focus {
+      outline: none;
+      border-color: #3152B8;
+      box-shadow: 0 0 0 3px rgba(49, 82, 184, 0.1);
+    }
+
+    .form-select:disabled {
+      background: #F3F4F6;
+      cursor: not-allowed;
+      color: #9CA3AF;
+    }
+
+    .time-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .time-slot {
+      height: 40px;
+      border: 1px solid #D1D5DC;
+      border-radius: 6px;
+      background: white;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .time-slot:hover {
+      border-color: #3152B8;
+      color: #3152B8;
+    }
+
+    .time-slot.selected {
+      background: #3152B8;
+      border-color: #3152B8;
+      color: white;
+    }
+
+    .form-textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #D1D5DC;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #111827;
+      font-family: 'Inter', sans-serif;
+      resize: none;
+      transition: all 0.2s;
+    }
+
+    .form-textarea:focus {
+      outline: none;
+      border-color: #3152B8;
+      box-shadow: 0 0 0 3px rgba(49, 82, 184, 0.1);
+    }
+
+    .form-textarea::placeholder {
+      color: #9CA3AF;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid #E5E7EB;
+      margin-top: 32px;
+    }
+
+    .btn {
+      height: 40px;
+      padding: 0 24px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-secondary {
+      background: white;
+      border: 1px solid #D1D5DC;
+      color: #374151;
+    }
+
+    .btn-secondary:hover {
+      background: #F9FAFB;
+    }
+
+    .btn-primary {
+      background: #3152B8;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2742a0;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 40;
+      display: none;
+      animation: fadeIn 0.2s;
+    }
+
+    .modal-overlay.show {
+      display: block;
+    }
+
+    .modal-container {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 16px;
+    }
+
+    .modal-container.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+      animation: modalIn 0.2s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      right: 16px;
+      top: 16px;
+      color: #9CA3AF;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.2s;
+      padding: 4px;
+    }
+
+    .modal-close:hover {
+      color: #4B5563;
+    }
+
+    .modal-close svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .modal-icon {
+      width: 64px;
+      height: 64px;
+      background: #EFF6FF;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+
+    .modal-icon svg {
+      width: 32px;
+      height: 32px;
+      stroke: #3152B8;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #111827;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .modal-description {
+      font-size: 14px;
+      color: #6B7280;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .modal-summary {
+      background: #F9FAFB;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .summary-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .summary-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .summary-value {
+      font-size: 14px;
+      color: #111827;
+    }
+
+    .summary-highlight {
+      font-weight: 600;
+      color: #3152B8;
+    }
+
+    .summary-divider {
+      height: 1px;
+      background: #E5E7EB;
+      margin: 8px 0;
+    }
+
+    .summary-full {
+      margin-bottom: 12px;
+    }
+
+    .summary-full:last-child {
+      margin-bottom: 0;
+    }
+
+    .summary-full .summary-label {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .summary-full .summary-value {
+      display: block;
+      line-height: 1.5;
+    }
+
+
+    .page-title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .page-title-row .page-title {
+      margin-bottom: 0;
+    }
+
+    .btn-new-appt {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      height: 40px;
+      padding: 0 18px;
+      background: #3152B8;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    .btn-new-appt:hover {
+      background: #2641a0;
+    }
+
+    .confirm-date-field {
+      justify-content: flex-end;
+    }
+
+    .btn-confirm-date {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      height: 40px;
+      padding: 0 20px;
+      background: #3152B8;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    .btn-confirm-date:hover:not(:disabled) {
+      background: #2641a0;
+    }
+
+    .btn-confirm-date:disabled {
+      background: #D1D5DC;
+      color: #9CA3AF;
+      cursor: not-allowed;
+    }
+
+    .btn-confirm-date.confirmed {
+      background: #16A34A;
+      color: white;
+    }
+
+    .btn-confirm-date.confirmed:disabled {
+      background: #16A34A;
+      color: white;
+      cursor: default;
+    }
+
+    .btn-confirm-date.confirmed:hover:not(:disabled) {
+      background: #15803D;
+    }
+    .modal-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      background: #FFFBEB;
+      border: 1px solid #FCD34D;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #92400E;
+      line-height: 1.5;
+    }
+
+    .modal-notice svg {
+      stroke: #D97706;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .modal-actions .btn {
+      flex: 1;
+      height: 44px;
+    }
+
+    /* Toast Styles */
+    .toast-container {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 100;
+      display: none;
+    }
+
+    .toast-container.show {
+      display: block;
+      animation: slideIn 0.3s;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(32px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .toast {
+      width: 520px;
+      height: 70px;
+      border-radius: 8px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+    }
+
+    .toast.success {
+      background: #F0FDF4;
+      border: 1px solid #BBF7D0;
+    }
+
+    .toast.error {
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+    }
+
+    .toast-icon {
+      flex-shrink: 0;
+    }
+
+    .toast-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .toast.success .toast-icon svg {
+      stroke: #16A34A;
+    }
+
+    .toast.error .toast-icon svg {
+      stroke: #DC2626;
+    }
+
+    .toast-message {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .toast.success .toast-message {
+      color: #166534;
+    }
+
+    .toast.error .toast-message {
+      color: #991B1B;
+    }
+
+    .toast-close {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      padding: 4px;
+    }
+
+    .toast-close:hover {
+      opacity: 0.7;
+    }
+
+    .toast-close svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .toast.success .toast-close svg {
+      stroke: #16A34A;
+    }
+
+    .toast.error .toast-close svg {
+      stroke: #DC2626;
+    }
+
+    /* Detail View Styles */
+    #detailView {
+      display: none;
+    }
+
+    #detailView.show {
+      display: block;
+    }
+
+    #formView.hide {
+      display: none;
+    }
+
+    .back-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #6B7280;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.2s;
+      border: none;
+      background: none;
+      padding: 0;
+      margin-bottom: 24px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .back-button:hover {
+      color: #111827;
+    }
+
+    .back-button svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .detail-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      padding: 32px;
+    }
+
+    .detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #E5E7EB;
+    }
+
+    .detail-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .room-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      background: #EFF6FF;
+      color: #1D4ED8;
+      border: 1px solid #BFDBFE;
+      white-space: nowrap;
+    }
+
+    .room-badge svg {
+      width: 14px;
+      height: 14px;
+      stroke: #1D4ED8;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      background: #D1FAE5;
+      color: #065F46;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 48px 24px;
+    }
+
+    .detail-item {
+      display: flex;
+      gap: 12px;
+    }
+
+    .detail-item svg {
+      width: 18px;
+      height: 18px;
+      stroke: #9CA3AF;
+      stroke-width: 2;
+      fill: none;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .detail-item-content {
+      flex: 1;
+    }
+
+    .detail-item-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 4px;
+    }
+
+    .detail-item-value {
+      font-size: 14px;
+      color: #111827;
+    }
+
+    .detail-note {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #E5E7EB;
+      display: flex;
+      gap: 12px;
+    }
+
+    .detail-note svg {
+      width: 18px;
+      height: 18px;
+      stroke: #9CA3AF;
+      stroke-width: 2;
+      fill: none;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .detail-note-content {
+      flex: 1;
+    }
+
+    .detail-note-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    .detail-note-value {
+      font-size: 14px;
+      color: #6B7280;
+      line-height: 1.5;
+    }
+
+    .detail-actions {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #E5E7EB;
+      display: flex;
+      gap: 12px;
+    }
+
+    .detail-actions .btn {
+      height: 44px;
+      padding: 0 24px;
+    }
+
+    .btn-danger {
+      background: #EF4444;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #DC2626;
+    }
+
+    /* Chat button CSS */
+    .chat-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background-color: #3b5bcc;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      cursor: pointer;
+      z-index: 999;
+    }
+
+    /* Custom Date Picker */
+    .date-picker-wrapper {
+      position: relative;
+    }
+    .date-picker-display {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border: 1px solid #D1D5DC;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: 14px;
+      color: #374151;
+      transition: border-color 0.2s;
+      user-select: none;
+    }
+    .date-picker-display:hover { border-color: #3152B8; }
+    .date-picker-display.empty span { color: #9CA3AF; }
+    .custom-calendar {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      z-index: 100;
+      background: white;
+      border: 1px solid #D1D5DC;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      padding: 16px;
+      width: 300px;
+    }
+    .custom-calendar.open { display: block; }
+    .cal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .cal-header button {
+      background: none;
+      border: 1px solid #E5E7EB;
+      border-radius: 6px;
+      width: 28px; height: 28px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #374151;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .cal-header button:hover { background: #F3F4F6; }
+    .cal-header .cal-month-year { font-size: 14px; font-weight: 600; color: #111827; }
+    .cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .cal-weekdays span { font-size: 11px; font-weight: 600; color: #9CA3AF; padding: 4px 0; }
+    .cal-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+    .cal-day {
+      aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #374151;
+      transition: background 0.15s, color 0.15s;
+      border: none; background: none;
+    }
+    .cal-day:hover:not(.disabled):not(.empty) { background: #EEF2FF; color: #3152B8; }
+    .cal-day.selected { background: #3152B8; color: white; font-weight: 600; }
+    .cal-day.today:not(.selected) { border: 1.5px solid #3152B8; color: #3152B8; font-weight: 600; }
+    .cal-day.disabled { color: #D1D5DC; cursor: not-allowed; }
+    .cal-day.weekend { color: #D1D5DC; cursor: not-allowed; background: #FAFAFA; }
+    .cal-day.empty { cursor: default; }
+  </style>
+</head>
+<body>
+  <!-- Left Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+        </svg>
+      </div>
+      <div class="logo-text">CliniCare</div>
+    </div>
+
+    <nav class="nav-menu">
+      <button type="button" class="nav-item" onclick="location.href='trangchubn.html'">
+        <span>Trang chủ</span>
+      </button>
+
+      <button type="button" class="nav-item active" onclick="location.href='datlich2.html'">
+        <span>Đặt lịch</span>
+      </button>
+
+      <button type="button" class="nav-item" onclick="location.href='lichhencuatoi.html'">
+        <span>Lịch hẹn của tôi</span>
+      </button>
+
+      <button type="button" class="nav-item" onclick="location.href='hosocanhan.html'">
+        <span>Hồ sơ bệnh nhân</span>
+      </button>
+
+      <button type="button" class="nav-item" onclick="location.href='dskhoa.html'">
+        <span>Khoa và bác sĩ</span>
+      </button>
+    </nav>
+
+    <div class="nav-logout">
+      <button type="button" class="nav-item logout" onclick="localStorage.removeItem('accessToken');localStorage.removeItem('user');location.href='../dangnhap.html'">
+        <span>Đăng xuất</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Top Header -->
+  <header class="header">
+    <div class="header-left">
+    </div>
+
+    <div class="header-right">
+      <span class="header-username">Abc</span>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="content-wrapper">
+
+      <!-- ══ FORM VIEW ══ -->
+      <div id="formView">
+        <!-- Page Title -->
+        <div class="page-title">
+          <h1>Đặt lịch khám</h1>
+          <p>Lên lịch khám với bác sĩ</p>
+        </div>
+
+        <!-- Form Container -->
+        <div class="form-container">
+        <form id="appointmentForm">
+          <!-- Patient Information Section -->
+          <div class="form-section">
+            <h2 class="section-title">Thông tin bệnh nhân</h2>
+            <div class="form-grid">
+              <div class="form-field">
+                <label>Họ và tên <span class="required">*</span></label>
+                <input type="text" class="form-input" name="fullName" id="fullName" placeholder="Nhập họ và tên đầy đủ" required minlength="2" autocomplete="name">
+              </div>
+
+              <div class="form-field">
+                <label>Số điện thoại <span class="required">*</span></label>
+                <input type="tel" class="form-input" name="phoneNumber" id="phoneNumber" placeholder="Nhập số điện thoại (10 số)" maxlength="10" pattern="\d{10}" required>
+              </div>
+
+              <div class="form-field">
+                <label>Giới tính <span class="required">*</span></label>
+                <select class="form-select" name="gender" required>
+                  <option value="">Chọn giới tính</option>
+                  <option value="male">Nam</option>
+                  <option value="female">Nữ</option>
+                  <option value="other">Khác</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label>Ngày sinh <span class="required">*</span></label>
+                <input type="text" class="form-input" name="dateOfBirth" id="dateOfBirth" placeholder="dd/mm/yyyy" maxlength="10" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Appointment Details Section -->
+          <div class="form-section">
+            <h2 class="section-title">Thông tin lịch khám</h2>
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label>Chọn khoa khám <span class="required">*</span></label>
+                  <select class="form-select" name="department" id="department" required>
+                    <option value="">Đang tải khoa...</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label>Chọn bác sĩ <span class="text-muted" style="font-weight:400;">(Không bắt buộc)</span></label>
+                  <select class="form-select" name="doctor" id="doctor" disabled>
+                    <option value="">Chọn bác sĩ</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-grid" style="align-items:flex-start;">
+                <div class="form-field">
+                  <label>Chọn ngày khám <span class="required">*</span></label>
+                  <div class="date-picker-wrapper" id="apptDateWrapper">
+                    <div class="date-picker-display" id="apptDateDisplay" onclick="toggleApptCalendar()">
+                      <span id="apptDateText">Chọn ngày khám</span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                      </svg>
+                    </div>
+                    <div class="custom-calendar" id="apptCalendar"></div>
+                  </div>
+                  <input type="hidden" name="appointmentDate" id="appointmentDate" required>
+                </div>
+
+                <div class="form-field confirm-date-field">
+                  <label>&nbsp;</label>
+                  <button type="button" class="btn btn-confirm-date" id="confirmDateBtn" onclick="confirmDateSelection()" disabled>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Xác nhận
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-field" id="timeSlotSection" style="display:none;">
+                <label>Chọn giờ khám <span class="required">*</span></label>
+                <div class="time-grid" id="appointmentTimeGrid"></div>
+                <style>.time-slot.slot-taken{opacity:0.45;cursor:not-allowed;}</style>
+                <input type="hidden" name="appointmentTime" id="appointmentTime" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reason for Visit Section -->
+          <div class="form-section">
+            <h2 class="section-title">Ghi chú</h2>
+            <div class="form-field">
+              <textarea class="form-textarea" name="reasonForVisit" rows="4" placeholder="Nhập triệu chứng của bạn..." required></textarea>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="resetForm()">Hủy</button>
+            <button type="submit" class="btn btn-primary">Đặt lịch khám</button>
+          </div>
+        </form>
+      </div><!-- end form-container -->
+      </div><!-- end formView -->
+
+      <!-- ══ DETAIL VIEW ══ -->
+      <div id="detailView">
+        <div class="page-title-row">
+          <div class="page-title">
+            <h1>Chi tiết lịch hẹn</h1>
+            <p>Thông tin chi tiết của lịch khám</p>
+          </div>
+          <button type="button" class="btn btn-new-appt" onclick="backToForm(); resetForm();">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Đặt lịch mới
+          </button>
+        </div>
+
+        <div class="detail-card" id="detailContent"></div>
+      </div><!-- end detailView -->
+
+    </div>
+  </main>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
+  <div class="modal-container" id="modalContainer">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()">
+        <svg viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <div class="modal-body">
+        <div class="modal-icon">
+          <svg viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+
+        <h2 class="modal-title">Xác nhận đặt lịch</h2>
+        <p class="modal-description">Bạn có chắc chắn muốn đặt lịch khám với thông tin sau?</p>
+
+        <div class="modal-summary" id="modalSummary"></div>
+
+        <div class="modal-notice">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="flex-shrink:0;margin-top:1px;">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span><strong>Lưu ý:</strong> Chỉ được đổi/hủy lịch hẹn trước 2 tiếng so với giờ hẹn.</span>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+          <button class="btn btn-primary" onclick="confirmAppointment()">Xác nhận</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-container" id="toastContainer">
+    <div class="toast success">
+      <div class="toast-icon">
+        <svg viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <div class="toast-message" id="toastMessage">Đặt lịch hẹn thành công!</div>
+      <button class="toast-close" onclick="closeToast()">
+        <svg viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Chat Button -->
+  <div class="chat-btn">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+      <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+    </svg>
+  </div>
+
+  <script src="../assets/js/shared/config.js"></script>
+  <script src="../assets/js/shared/api.js"></script>
+  <script src="../assets/js/shared/roomLabel.js"></script>
+  <script src="../assets/js/shared/datetimeVi.js"></script>
+  <script src="../assets/js/shared/patientChatbot.js"></script>
+  <script src="assets/js/headerPatientName.js"></script>
+  <script src="assets/js/datlich2.js"></script>
+</body>
+</html>

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CliniCare - Quản lý lịch hẹn</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f9fafb;
+            color: #111827;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 210px;
+            height: 100vh;
+            background-color: #2F56C0;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            z-index: 40;
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            background-color: white;
+            color: #2F56C0;
+            border-radius: 8px;
+            padding: 8px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-text {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+        }
+
+        .menu-item {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            background: transparent;
+            border: none;
+            color: white;
+            text-align: left;
+            font-size: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .menu-item:hover { background-color: rgba(255, 255, 255, 0.1); }
+        .menu-item.active { background-color: rgba(255, 255, 255, 0.2); }
+
+        .sidebar-footer {
+            padding: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Main Content */
+        .main-wrapper {
+            margin-left: 210px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title { font-size: 20px; font-weight: 600; color: #1f2937; }
+
+        .header-right { display: flex; align-items: center; gap: 16px; }
+
+        .user-name { font-size: 14px; font-weight: 500; color: #374151; }
+
+        /* Content Area */
+        .content { flex: 1; padding: 24px; }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #f3f4f6;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.2s;
+        }
+
+        .stat-card:hover { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+
+        .stat-title { font-size: 14px; color: #6b7280; margin-bottom: 8px; }
+        .stat-value { font-size: 28px; font-weight: 600; color: #111827; }
+
+        /* Filters Section */
+        .filters-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #f3f4f6;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .filter-input, .filter-select {
+            width: 100%;
+            padding: 10px 16px;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .filter-input:focus, .filter-select:focus {
+            border-color: #2F56C0;
+            box-shadow: 0 0 0 2px rgba(47, 86, 192, 0.2);
+        }
+
+        .filter-search { position: relative; }
+
+        .filter-search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            width: 16px;
+            height: 16px;
+        }
+
+        .filter-search .filter-input { padding-left: 40px; }
+
+        /* Table Container */
+        .table-container {
+            background-color: white;
+            border-radius: 12px;
+            border: 1px solid #f3f4f6;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title { font-size: 16px; font-weight: 600; color: #111827; }
+
+        .table-wrapper { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead { background-color: #f9fafb; }
+
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        td {
+            padding: 16px;
+            font-size: 14px;
+            color: #374151;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        tbody tr { cursor: pointer; transition: background-color 0.15s; }
+        tbody tr:hover { background-color: #f9fafb; }
+        tbody tr:last-child td { border-bottom: none; }
+
+        .patient-name { font-weight: 500; color: #111827; }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 9999px;
+        }
+
+        .status-confirmed {
+            background-color: rgba(16, 185, 129, 0.125);
+            color: #10b981;
+        }
+
+        .status-cancelled {
+            background-color: rgba(239, 68, 68, 0.125);
+            color: #ef4444;
+        }
+
+        .status-completed {
+            background-color: rgba(99, 102, 241, 0.125);
+            color: #6366f1;
+        }
+
+        .status-pending {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: #d97706;
+        }
+
+        /* Pagination */
+        .pagination {
+            padding: 16px 24px;
+            border-top: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pagination-info { font-size: 14px; color: #6b7280; }
+
+        .pagination-buttons { display: flex; gap: 4px; }
+
+        .pagination-btn {
+            padding: 6px 12px;
+            font-size: 14px;
+            border: 1px solid #e5e7eb;
+            background-color: white;
+            color: #374151;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .pagination-btn:hover { background-color: #f3f4f6; }
+        .pagination-btn.active { background-color: #2F56C0; color: white; border-color: #2F56C0; }
+
+        /* SVG Icons */
+        .icon { width: 20px; height: 20px; }
+
+        /* Toast notification */
+        .toast {
+            display: none;
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            padding: 14px 20px;
+            font-size: 14px;
+            color: #166534;
+            font-weight: 500;
+            z-index: 200;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            align-items: center;
+            gap: 10px;
+        }
+        .toast.show { display: flex; }
+        .toast svg { stroke: #16a34a; fill: none; stroke-width: 2; flex-shrink: 0; }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+            </div>
+            <h1 class="logo-text">CliniCare</h1>
+        </div>
+
+        <nav class="sidebar-nav">
+            <button class="menu-item" onclick="window.location.href='trangchuadmin.html'">Trang chủ</button>
+            <button class="menu-item active" onclick="window.location.href='quanlylichhenadmin.html'">Quản lý lịch hẹn</button>
+            <button class="menu-item" onclick="window.location.href='khoavabacsi.html'">Quản lý khoa và bác sĩ</button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button type="button" class="menu-item" onclick="localStorage.removeItem('accessToken');localStorage.removeItem('user');location.href='../dangnhap.html'">Đăng xuất</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <!-- Header -->
+        <header class="header">
+            <h2 class="header-title">Quản lý lịch hẹn</h2>
+            <div class="header-right">
+                <span class="user-name">Quản trị viên</span>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <main class="content">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <p class="stat-title">Tổng lịch hẹn hôm nay</p>
+                    <h3 class="stat-value" id="statTotal">0</h3>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-title">Đã xác nhận hôm nay</p>
+                    <h3 class="stat-value" id="statConfirmed">0</h3>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-title">Đã hủy hôm nay</p>
+                    <h3 class="stat-value" id="statCancelled">0</h3>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-title">Đã khám xong hôm nay</p>
+                    <h3 class="stat-value" id="statCompleted">0</h3>
+                </div>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <div class="filters-grid">
+                    <div class="filter-search">
+                        <svg class="filter-search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <input type="text" id="filterName" class="filter-input" placeholder="Tìm tên bệnh nhân...">
+                    </div>
+                    <select id="filterStatus" class="filter-select">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="confirmed">Đã xác nhận</option>
+                        <option value="cancelled">Đã hủy</option>
+                        <option value="completed">Đã khám xong</option>
+                    </select>
+                    <input type="date" id="filterDate" class="filter-input">
+                </div>
+            </div>
+
+            <!-- Appointments Table -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h3 class="table-title">Lịch hẹn gần đây</h3>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Mã lịch</th>
+                                <th>Họ và tên bệnh nhân</th>
+                                <th>Bác sĩ</th>
+                                <th>Khoa khám</th>
+                                <th>Ngày hẹn</th>
+                                <th>Giờ</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsTableBody">
+                            <tr><td colspan="8" style="text-align:center;padding:24px;color:#6b7280;">Đang tải…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <p class="pagination-info" id="paginationInfo">
+                        Hiển thị <span>0</span> trong <span>0</span> lịch hẹn
+                    </p>
+                    <div class="pagination-buttons" id="paginationButtons"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toastEl">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span id="toastMsg">Đã hủy lịch hẹn thành công!</span>
+    </div>
+
+    <script src="../assets/js/shared/config.js"></script>
+    <script src="../assets/js/shared/api.js"></script>
+    <script src="assets/js/quanlylichhenadmin.js"></script>
+</body>
+</html>

@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CliniCare - Hồ sơ bệnh nhân</title>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #3152B8;
+            --bg-sidebar: #3152B8;
+            --bg-active: #5371D1;
+            --bg-content: #F4F7FE;
+            --bg-card-grey: #F1F5F9;
+            --text-detail: #475569;
+            --border-color: #E2E8F0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: "Be Vietnam Pro", sans-serif;
+            background: var(--bg-content);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 210px;
+            height: 100vh;
+            background: #2F56C0;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: white;
+            color: #2F56C0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+        }
+
+        .logo-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .logo-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding: 12px;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-logout {
+            margin-top: auto;
+            padding: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-item.logout {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .nav-item.logout:hover {
+            background: rgba(255, 100, 100, 0.2);
+            color: #fca5a5;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: white;
+            transition: background-color 0.2s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 14px;
+            margin-bottom: 4px;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        /* --- MAIN --- */
+        .wrapper {
+            flex: 1;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin-left: 210px;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+        }
+
+        .search-box {
+            background: #F1F5F9;
+            padding: 8px 15px;
+            border-radius: 10px;
+            width: 320px;
+            display: flex;
+            align-items: center;
+            margin-right: 25px;
+        }
+        .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 13px; margin-left: 8px; }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-username { font-size: 14px; font-weight: 500; color: #374151; }
+
+        .main-content {
+            flex: 1;
+            background: var(--bg-content);
+            padding: 35px;
+            overflow-y: auto;
+        }
+
+        .page-title { color: var(--primary); font-size: 26px; font-weight: 800; margin-bottom: 25px; }
+
+        .info-layout { display: flex; gap: 25px; }
+
+        .card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .left-card { width: 320px; text-align: center; }
+        .right-card { flex: 1; }
+
+        .avatar-wrap {
+            width: 120px; height: 120px;
+            border: 4px solid var(--primary);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 55px; color: var(--primary);
+        }
+
+        .patient-name { font-size: 28px; font-weight: 800; margin-bottom: 5px; }
+        .patient-id { color: var(--primary); font-weight: 700; margin-bottom: 15px; }
+        .tag { background: var(--bg-card-grey); padding: 7px 22px; border-radius: 25px; font-size: 14px; color: #64748B; font-weight: 500; }
+
+        /* NÚT CHỈNH SỬA */
+        .edit-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: "Be Vietnam Pro", sans-serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .edit-btn:hover { background: #2640a0; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(49,82,184,0.35); }
+
+        .section-header { font-size: 22px; font-weight: 800; margin-bottom: 15px; color: #1E293B; }
+        .divider { height: 1px; background: var(--border-color); margin: 20px 0; }
+
+        .grid-info { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+        .grid-info p { color: var(--text-detail); font-size: 15px; font-weight: 400; }
+        .grid-info span { color: var(--text-detail); font-weight: 500; margin-left: 5px; }
+
+        .health-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .stat-item {
+            background: var(--bg-card-grey);
+            padding: 18px 10px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #E2E8F0;
+        }
+        .stat-item label { display: block; font-size: 13px; color: #64748B; margin-bottom: 6px; }
+        .stat-item b { color: var(--primary); font-size: 17px; font-weight: 700; }
+
+        .bottom-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; margin-top: 25px; }
+        .bottom-summary h4 { font-size: 17px; font-weight: 800; margin-bottom: 12px; color: #1E293B; }
+
+        .list-unstyled { list-style: none; padding: 0; }
+        .list-unstyled li { font-size: 15px; color: var(--text-detail); line-height: 1.8; }
+        .summary-text { font-size: 15px; color: var(--text-detail); line-height: 1.8; }
+
+        /* --- CHAT BTN --- */
+        .chat-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: #3b5bcc;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        .chat-btn:hover { transform: translateY(-5px); background-color: #2d46a3; }
+
+        /* ===== MODAL OVERLAY ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+        .modal-overlay.open { display: flex; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            width: 680px;
+            max-width: 95vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.18);
+            animation: slideUp 0.25s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 30px 20px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1;
+            border-radius: 20px 20px 0 0;
+        }
+        .modal-header h2 { font-size: 20px; font-weight: 800; color: #1E293B; }
+        .modal-close {
+            width: 36px; height: 36px;
+            background: #F1F5F9;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: #64748B;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        .modal-close:hover { background: #E2E8F0; color: #1E293B; }
+
+        .modal-body { padding: 25px 30px 30px; }
+
+        /* FORM SECTIONS */
+        .form-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 16px;
+            margin-top: 24px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #EEF2FF;
+        }
+        .form-section-title:first-child { margin-top: 0; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-grid .full { grid-column: span 2; }
+
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+        }
+        .form-group label .required { color: #EF4444; margin-left: 3px; }
+        .form-group label .optional { color: #94A3B8; font-weight: 400; font-size: 12px; margin-left: 4px; }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 14px;
+            font-family: "Be Vietnam Pro", sans-serif;
+            color: #1E293B;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: white;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(49,82,184,0.1);
+        }
+        .form-group input.error,
+        .form-group select.error { border-color: #EF4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.1); }
+
+        .form-group textarea { resize: vertical; min-height: 70px; }
+
+        .error-msg {
+            font-size: 12px;
+            color: #EF4444;
+            display: none;
+            align-items: center;
+            gap: 4px;
+        }
+        .error-msg.show { display: flex; }
+
+        /* BMI display */
+        .bmi-display {
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 14px;
+            color: #64748B;
+            background: var(--bg-card-grey);
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* MODAL FOOTER */
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            position: sticky;
+            bottom: 0;
+            background: white;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .btn-cancel {
+            padding: 10px 24px;
+            border: 1.5px solid var(--border-color);
+            background: white;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: "Be Vietnam Pro", sans-serif;
+            color: #64748B;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-cancel:hover { background: #F1F5F9; }
+
+        .btn-save {
+            padding: 10px 28px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: "Be Vietnam Pro", sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-save:hover { background: #2640a0; box-shadow: 0 4px 12px rgba(49,82,184,0.35); }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #10B981;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: "Be Vietnam Pro", sans-serif;
+            z-index: 99999;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+            </div>
+            <div class="logo-text">CliniCare</div>
+        </div>
+        <nav class="nav-menu">
+            <button type="button" class="nav-item" onclick="location.href='trangchubn.html'"><span>Trang chủ</span></button>
+            <button type="button" class="nav-item" onclick="location.href='datlich2.html'"><span>Đặt lịch</span></button>
+            <button type="button" class="nav-item" onclick="location.href='lichhencuatoi.html'"><span>Lịch hẹn của tôi</span></button>
+            <button type="button" class="nav-item active" onclick="location.href='hosocanhan.html'"><span>Hồ sơ bệnh nhân</span></button>
+            <button type="button" class="nav-item" onclick="location.href='dskhoa.html'"><span>Khoa và bác sĩ</span></button>
+        </nav>
+        <div class="nav-logout">
+            <button type="button" class="nav-item logout" onclick="localStorage.removeItem('accessToken');localStorage.removeItem('user');location.href='../dangnhap.html'"><span>Đăng xuất</span></button>
+        </div>
+    </aside>
+
+    <div class="wrapper">
+        <div class="header">
+            <div></div>
+            <div class="header-right">
+                <div class="header-username">Abc</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <h1 class="page-title">HỒ SƠ BỆNH NHÂN - <span id="display-title">LÊ VĂN A (BN001)</span></h1>
+
+            <div class="info-layout">
+                <!-- LEFT CARD -->
+                <div class="card left-card">
+                    <div class="avatar-wrap"><i class="fa-solid fa-user"></i></div>
+                    <h2 class="patient-name" id="disp-name">LÊ VĂN A</h2>
+                    <p class="patient-id">Mã BN: BN001</p>
+                    <span class="tag" id="disp-tag">Nam, 51 tuổi</span>
+                    <br>
+                    <button class="edit-btn" id="openEditBtn">
+                        <i class="fa-solid fa-pen-to-square"></i> Chỉnh sửa thông tin
+                    </button>
+                </div>
+
+                <!-- RIGHT CARD -->
+                <div class="card right-card">
+                    <h3 class="section-header">THÔNG TIN CHUNG</h3>
+                    <div class="divider"></div>
+
+                    <h4 style="margin-bottom: 15px; font-weight: 700;">Thông tin cá nhân</h4>
+                    <div class="grid-info">
+                        <p>Họ và tên: <span id="disp-hoten">Lê Văn A</span></p>
+                        <p>CMND/CCCD: <span id="disp-cccd">042305004221</span></p>
+                        <p>Ngày sinh: <span id="disp-ngaysinh">17/05/1975</span></p>
+                        <p>Giới tính: <span id="disp-gioitinh">Nam</span></p>
+                        <p>SĐT: <span id="disp-sdt">0835634672</span></p>
+                        <p style="grid-column: span 2;">Địa chỉ: <span id="disp-diachi">---</span></p>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <h4 style="margin-bottom: 15px; font-weight: 700;">Thông tin sức khoẻ cơ bản</h4>
+                    <div class="health-stats">
+                        <div class="stat-item"><label>Chiều cao:</label><b id="disp-chieucao">177 cm</b></div>
+                        <div class="stat-item"><label>Cân nặng:</label><b id="disp-cannang">65 kg</b></div>
+                        <div class="stat-item"><label>BMI:</label><b id="disp-bmi">22.5 - Bình thường</b></div>
+                        <div class="stat-item"><label>Nhóm máu:</label><b id="disp-nhommau">A</b></div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="bottom-summary">
+                        <div>
+                            <h4>Tiền sử bệnh lý</h4>
+                            <p class="summary-text" id="disp-tiensu">Viêm dạ dày, Tăng huyết áp</p>
+                        </div>
+                        <div>
+                            <h4>Dị ứng</h4>
+                            <p class="summary-text" id="disp-diung">Không có dữ liệu</p>
+                        </div>
+                        <div>
+                            <h4>Ghi chú</h4>
+                            <p class="summary-text" id="disp-ghichu">Thường xuyên tái khám định kỳ mỗi 3 tháng.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHAT BTN -->
+    <div class="chat-btn">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+        </svg>
+    </div>
+
+    <!-- ===== MODAL CHỈNH SỬA ===== -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-pen-to-square" style="color:var(--primary);margin-right:8px"></i>Chỉnh sửa hồ sơ bệnh nhân</h2>
+                <button class="modal-close" id="closeModal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="modal-body">
+                <!-- THÔNG TIN CÁ NHÂN -->
+                <div class="form-section-title">Thông tin cá nhân</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Họ và tên <span class="required">*</span></label>
+                        <input type="text" id="f-hoten" placeholder="Nhập họ và tên">
+                        <span class="error-msg" id="err-hoten"><i class="fa-solid fa-circle-exclamation"></i> Họ tên chỉ được chứa chữ cái và khoảng trắng</span>
+                    </div>
+                    <div class="form-group">
+                        <label>CMND/CCCD <span class="required">*</span></label>
+                        <input type="text" id="f-cccd" placeholder="12 số, bắt đầu bằng 0" maxlength="12">
+                        <span class="error-msg" id="err-cccd"><i class="fa-solid fa-circle-exclamation"></i> CCCD phải đủ 12 số và bắt đầu bằng số 0</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Ngày sinh <span class="required">*</span></label>
+                        <div style="display:flex; gap:8px;">
+                            <input type="number" id="f-ngaysinh-d" placeholder="DD" min="1" max="31" style="width:33%; text-align:center;">
+                            <input type="number" id="f-ngaysinh-m" placeholder="MM" min="1" max="12" style="width:33%; text-align:center;">
+                            <input type="number" id="f-ngaysinh-y" placeholder="YYYY" min="1900" style="width:34%; text-align:center;">
+                        </div>
+                        <span class="error-msg" id="err-ngaysinh"><i class="fa-solid fa-circle-exclamation"></i> Vui lòng nhập ngày sinh hợp lệ (DD/MM/YYYY)</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Giới tính <span class="required">*</span></label>
+                        <select id="f-gioitinh">
+                            <option value="">-- Chọn giới tính --</option>
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                        <span class="error-msg" id="err-gioitinh"><i class="fa-solid fa-circle-exclamation"></i> Vui lòng chọn giới tính</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại <span class="required">*</span></label>
+                        <input type="text" id="f-sdt" placeholder="10 số, bắt đầu bằng 0" maxlength="10">
+                        <span class="error-msg" id="err-sdt"><i class="fa-solid fa-circle-exclamation"></i> SĐT phải đủ 10 số và bắt đầu bằng số 0</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Địa chỉ <span class="required">*</span></label>
+                        <input type="text" id="f-diachi" placeholder="Nhập địa chỉ">
+                        <span class="error-msg" id="err-diachi"><i class="fa-solid fa-circle-exclamation"></i> Vui lòng nhập địa chỉ</span>
+                    </div>
+                </div>
+
+                <!-- THÔNG TIN SỨC KHOẺ -->
+                <div class="form-section-title">Thông tin sức khoẻ</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Chiều cao (cm) <span class="required">*</span></label>
+                        <input type="number" id="f-chieucao" placeholder="VD: 170" min="50" max="250">
+                        <span class="error-msg" id="err-chieucao"><i class="fa-solid fa-circle-exclamation"></i> Vui lòng nhập chiều cao hợp lệ (50–250 cm)</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Cân nặng (kg) <span class="required">*</span></label>
+                        <input type="number" id="f-cannang" placeholder="VD: 65" min="10" max="300">
+                        <span class="error-msg" id="err-cannang"><i class="fa-solid fa-circle-exclamation"></i> Vui lòng nhập cân nặng hợp lệ (10–300 kg)</span>
+                    </div>
+                    <div class="form-group">
+                        <label>BMI <span class="optional">(tự động tính)</span></label>
+                        <div class="bmi-display" id="f-bmi-display">Nhập chiều cao và cân nặng...</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Nhóm máu <span class="optional">(không bắt buộc)</span></label>
+                        <select id="f-nhommau">
+                            <option value="">-- Chọn nhóm máu --</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="AB">AB</option>
+                            <option value="O">O</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- TIỀN SỬ & GHI CHÚ -->
+                <div class="form-section-title">Bệnh lý & Ghi chú</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tiền sử bệnh lý <span class="optional">(không bắt buộc)</span></label>
+                        <textarea id="f-tiensu" placeholder="VD: Viêm dạ dày, tăng huyết áp..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Dị ứng <span class="optional">(không bắt buộc)</span></label>
+                        <textarea id="f-diung" placeholder="VD: Penicillin, đậu phộng..."></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>Ghi chú <span class="optional">(không bắt buộc)</span></label>
+                        <textarea id="f-ghichu" placeholder="Ghi chú thêm về bệnh nhân..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelModal">Huỷ bỏ</button>
+                <button class="btn-save" id="saveBtn"><i class="fa-solid fa-floppy-disk" style="margin-right:6px"></i>Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i> Cập nhật hồ sơ thành công!</div>
+
+    <script src="../assets/js/shared/config.js"></script>
+    <script src="../assets/js/shared/api.js"></script>
+    <script src="../assets/js/shared/patientChatbot.js"></script>
+    <script src="assets/js/headerPatientName.js"></script>
+    <script src="assets/js/hosocanhan.js"></script>
+    <script>
+    let patientData = {
+        hoten: '',
+        cccd: '',
+        ngaysinh: '',
+        gioitinh: '',
+        sdt: '',
+        diachi: '',
+        chieucao: '',
+        cannang: '',
+        nhommau: '',
+        tiensu: '',
+        diung: '',
+        ghichu: ''
+    };
+
+    function mapApiProfile(p) {
+        const ns = p.ngay_sinh ? String(p.ngay_sinh).split('T')[0] : '';
+        patientData = {
+            hoten: p.ho_ten || '',
+            cccd: p.cccd || '',
+            ngaysinh: ns,
+            gioitinh: p.gioi_tinh || '',
+            sdt: p.so_dien_thoai || '',
+            diachi: p.dia_chi || '',
+            chieucao: p.chieu_cao != null ? p.chieu_cao : '',
+            cannang: p.can_nang != null ? p.can_nang : '',
+            nhommau: p.nhom_mau || '',
+            tiensu: p.tien_su_benh || '',
+            diung: p.di_ung || '',
+            ghichu: p.ghi_chu || ''
+        };
+    }
+
+    async function loadProfile() {
+        if (!localStorage.getItem('accessToken')) {
+            window.location.href = '../dangnhap.html';
+            return;
+        }
+        try {
+            const p = await Api.auth.getProfile();
+            mapApiProfile(p);
+            updateDisplay();
+        } catch (e) {
+            alert(e.message || 'Không tải được hồ sơ');
+        }
+    }
+
+    // ===== HELPERS =====
+    function calcAge(dob) {
+        const today = new Date();
+        const birth = new Date(dob);
+        let age = today.getFullYear() - birth.getFullYear();
+        const m = today.getMonth() - birth.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+        return age;
+    }
+
+    function calcBMI(h, w) {
+        if (!h || !w || h <= 0 || w <= 0) return null;
+        const bmi = (w / ((h / 100) ** 2)).toFixed(1);
+        let status = '';
+        if (bmi < 18.5) status = 'Thiếu cân';
+        else if (bmi < 25) status = 'Bình thường';
+        else if (bmi < 30) status = 'Thừa cân';
+        else status = 'Béo phì';
+        return `${bmi} - ${status}`;
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '---';
+        const [y, m, d] = dateStr.split('-');
+        return `${d}/${m}/${y}`;
+    }
+
+    // ===== CẬP NHẬT GIAO DIỆN =====
+    function updateDisplay() {
+        const d = patientData;
+        const age = d.ngaysinh ? calcAge(d.ngaysinh) : '';
+        const bmiVal = calcBMI(d.chieucao, d.cannang);
+
+        document.getElementById('disp-name').textContent = d.hoten || '---';
+        const u = (() => { try { return JSON.parse(localStorage.getItem('user')||'null'); } catch(e) { return null; } })();
+        document.getElementById('display-title').textContent = `${d.hoten || 'Hồ sơ'}${u && u.id ? ' (' + u.id + ')' : ''}`;
+        document.getElementById('disp-tag').textContent = `${d.gioitinh || '---'}${age ? ', ' + age + ' tuổi' : ''}`;
+        document.getElementById('disp-hoten').textContent = d.hoten || '---';
+        document.getElementById('disp-cccd').textContent = d.cccd || '---';
+        document.getElementById('disp-ngaysinh').textContent = formatDate(d.ngaysinh);
+        document.getElementById('disp-gioitinh').textContent = d.gioitinh || '---';
+        document.getElementById('disp-sdt').textContent = d.sdt || '---';
+        document.getElementById('disp-diachi').textContent = d.diachi || '---';
+        document.getElementById('disp-chieucao').textContent = d.chieucao ? d.chieucao + ' cm' : '---';
+        document.getElementById('disp-cannang').textContent = d.cannang ? d.cannang + ' kg' : '---';
+        document.getElementById('disp-bmi').textContent = bmiVal || '---';
+        document.getElementById('disp-nhommau').textContent = d.nhommau || '---';
+        document.getElementById('disp-tiensu').textContent = d.tiensu || 'Không có dữ liệu';
+        document.getElementById('disp-diung').textContent = d.diung || 'Không có dữ liệu';
+        document.getElementById('disp-ghichu').textContent = d.ghichu || 'Không có ghi chú';
+    }
+
+    // ===== ĐIỀN FORM TỪ DATA =====
+    function populateForm() {
+        document.getElementById('f-hoten').value = patientData.hoten;
+        document.getElementById('f-cccd').value = patientData.cccd;
+        // Điền ngày sinh dạng dd/mm/yyyy vào 3 ô riêng
+        if (patientData.ngaysinh) {
+            const [y, m, d] = patientData.ngaysinh.split('-');
+            document.getElementById('f-ngaysinh-d').value = parseInt(d, 10);
+            document.getElementById('f-ngaysinh-m').value = parseInt(m, 10);
+            document.getElementById('f-ngaysinh-y').value = parseInt(y, 10);
+        } else {
+            document.getElementById('f-ngaysinh-d').value = '';
+            document.getElementById('f-ngaysinh-m').value = '';
+            document.getElementById('f-ngaysinh-y').value = '';
+        }
+        document.getElementById('f-gioitinh').value = patientData.gioitinh;
+        document.getElementById('f-sdt').value = patientData.sdt;
+        document.getElementById('f-diachi').value = patientData.diachi;
+        document.getElementById('f-chieucao').value = patientData.chieucao;
+        document.getElementById('f-cannang').value = patientData.cannang;
+        document.getElementById('f-nhommau').value = patientData.nhommau;
+        document.getElementById('f-tiensu').value = patientData.tiensu;
+        document.getElementById('f-diung').value = patientData.diung;
+        document.getElementById('f-ghichu').value = patientData.ghichu;
+        updateBMIDisplay();
+        clearAllErrors();
+    }
+
+    // ===== BMI TỰ ĐỘNG =====
+    function updateBMIDisplay() {
+        const h = parseFloat(document.getElementById('f-chieucao').value);
+        const w = parseFloat(document.getElementById('f-cannang').value);
+        const bmiEl = document.getElementById('f-bmi-display');
+        const val = calcBMI(h, w);
+        bmiEl.textContent = val || 'Nhập chiều cao và cân nặng...';
+        bmiEl.style.color = val ? 'var(--primary)' : '#94A3B8';
+        bmiEl.style.fontWeight = val ? '700' : '400';
+    }
+    document.getElementById('f-chieucao').addEventListener('input', updateBMIDisplay);
+    document.getElementById('f-cannang').addEventListener('input', updateBMIDisplay);
+
+    // ===== VALIDATION HELPERS =====
+    function showError(id, errId) {
+        document.getElementById(id).classList.add('error');
+        document.getElementById(errId).classList.add('show');
+    }
+    function hideError(id, errId) {
+        document.getElementById(id).classList.remove('error');
+        document.getElementById(errId).classList.remove('show');
+    }
+    function clearAllErrors() {
+        ['hoten','cccd','gioitinh','sdt','diachi','chieucao','cannang'].forEach(f => {
+            document.getElementById('f-' + f).classList.remove('error');
+            const e = document.getElementById('err-' + f);
+            if (e) e.classList.remove('show');
+        });
+        ['f-ngaysinh-d','f-ngaysinh-m','f-ngaysinh-y'].forEach(id => {
+            document.getElementById(id).classList.remove('error');
+        });
+        const eNs = document.getElementById('err-ngaysinh');
+        if (eNs) eNs.classList.remove('show');
+    }
+
+    // Realtime: chặn ký tự không hợp lệ
+    document.getElementById('f-hoten').addEventListener('input', function() {
+        this.value = this.value.replace(/[^a-zA-ZÀ-ỹà-ỹ\s]/g, '');
+    });
+    document.getElementById('f-cccd').addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '');
+    });
+    // Số điện thoại: chặn ký tự không phải số, giới hạn 10 số, xử lý paste
+    (function () {
+        const sdtInput = document.getElementById('f-sdt');
+        if (!sdtInput) return;
+
+        // Chặn ký tự không phải số
+        sdtInput.addEventListener('keydown', function (e) {
+            const allowed = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
+            if (!allowed.includes(e.key) && !/^\d$/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+
+        // Lọc khi paste: chỉ giữ số, cắt còn 10 ký tự
+        sdtInput.addEventListener('paste', function (e) {
+            e.preventDefault();
+            const pasted = (e.clipboardData || window.clipboardData).getData('text');
+            const digits = pasted.replace(/\D/g, '').substring(0, 10);
+            this.value = digits;
+            this.dispatchEvent(new Event('input'));
+        });
+
+        // Xóa lỗi realtime + lọc ký tự lạ (phòng autofill), giới hạn 10 số
+        sdtInput.addEventListener('input', function () {
+            const clean = this.value.replace(/\D/g, '').substring(0, 10);
+            if (this.value !== clean) this.value = clean;
+            hideError('f-sdt', 'err-sdt');
+        });
+    })();
+
+    // ===== VALIDATE FORM =====
+    function validateForm() {
+        let valid = true;
+
+        const hoten = document.getElementById('f-hoten').value.trim();
+        if (!hoten || !/^[a-zA-ZÀ-ỹà-ỹ\s]+$/.test(hoten)) {
+            showError('f-hoten', 'err-hoten'); valid = false;
+        } else hideError('f-hoten', 'err-hoten');
+
+        const cccd = document.getElementById('f-cccd').value.trim();
+        if (!/^0\d{11}$/.test(cccd)) {
+            showError('f-cccd', 'err-cccd'); valid = false;
+        } else hideError('f-cccd', 'err-cccd');
+
+        const d_val = parseInt(document.getElementById('f-ngaysinh-d').value);
+        const m_val = parseInt(document.getElementById('f-ngaysinh-m').value);
+        const y_val = parseInt(document.getElementById('f-ngaysinh-y').value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Kiểm tra các trường có giá trị hợp lệ cơ bản
+        const fieldsOk = !isNaN(d_val) && !isNaN(m_val) && !isNaN(y_val)
+            && d_val >= 1 && d_val <= 31
+            && m_val >= 1 && m_val <= 12
+            && y_val >= 1900;
+
+        // Kiểm tra ngày có tồn tại thực sự (VD: 30/02 không tồn tại)
+        const dateObj = fieldsOk ? new Date(y_val, m_val - 1, d_val) : null;
+        const dateExists = dateObj
+            && dateObj.getFullYear() === y_val
+            && dateObj.getMonth() === m_val - 1
+            && dateObj.getDate() === d_val;
+
+        // Kiểm tra ngày sinh < ngày hiện tại
+        const dateBeforeToday = dateExists && dateObj < today;
+
+        let nsErrMsg = 'Vui lòng nhập ngày sinh hợp lệ (DD/MM/YYYY)';
+        if (fieldsOk && dateExists && !dateBeforeToday) {
+            nsErrMsg = 'Ngày sinh phải nhỏ hơn ngày hiện tại';
+        } else if (fieldsOk && !dateExists) {
+            nsErrMsg = 'Ngày không tồn tại, vui lòng kiểm tra lại';
+        }
+
+        const nsValid = fieldsOk && dateExists && dateBeforeToday;
+        if (!nsValid) {
+            ['f-ngaysinh-d','f-ngaysinh-m','f-ngaysinh-y'].forEach(id => document.getElementById(id).classList.add('error'));
+            const errEl = document.getElementById('err-ngaysinh');
+            errEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${nsErrMsg}`;
+            errEl.classList.add('show');
+            valid = false;
+        } else {
+            ['f-ngaysinh-d','f-ngaysinh-m','f-ngaysinh-y'].forEach(id => document.getElementById(id).classList.remove('error'));
+            document.getElementById('err-ngaysinh').classList.remove('show');
+        }
+
+        const gioitinh = document.getElementById('f-gioitinh').value;
+        if (!gioitinh) {
+            showError('f-gioitinh', 'err-gioitinh'); valid = false;
+        } else hideError('f-gioitinh', 'err-gioitinh');
+
+        const sdt = document.getElementById('f-sdt').value.trim();
+        if (!/^0\d{9}$/.test(sdt)) {
+            showError('f-sdt', 'err-sdt'); valid = false;
+        } else hideError('f-sdt', 'err-sdt');
+
+        const diachi = document.getElementById('f-diachi').value.trim();
+        if (!diachi) {
+            showError('f-diachi', 'err-diachi'); valid = false;
+        } else hideError('f-diachi', 'err-diachi');
+
+        const chieucao = parseFloat(document.getElementById('f-chieucao').value);
+        if (!chieucao || chieucao < 50 || chieucao > 250) {
+            showError('f-chieucao', 'err-chieucao'); valid = false;
+        } else hideError('f-chieucao', 'err-chieucao');
+
+        const cannang = parseFloat(document.getElementById('f-cannang').value);
+        if (!cannang || cannang < 10 || cannang > 300) {
+            showError('f-cannang', 'err-cannang'); valid = false;
+        } else hideError('f-cannang', 'err-cannang');
+
+        return valid;
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', async () => {
+        if (!validateForm()) return;
+
+        const sv_d = String(parseInt(document.getElementById('f-ngaysinh-d').value)).padStart(2,'0');
+        const sv_m = String(parseInt(document.getElementById('f-ngaysinh-m').value)).padStart(2,'0');
+        const sv_y = document.getElementById('f-ngaysinh-y').value;
+        const ngaySinh = `${sv_y}-${sv_m}-${sv_d}`;
+
+        const payload = {
+            ho_ten: document.getElementById('f-hoten').value.trim(),
+            cccd: document.getElementById('f-cccd').value.trim(),
+            ngay_sinh: ngaySinh,
+            gioi_tinh: document.getElementById('f-gioitinh').value,
+            so_dien_thoai: document.getElementById('f-sdt').value.trim(),
+            dia_chi: document.getElementById('f-diachi').value.trim(),
+            chieu_cao: parseFloat(document.getElementById('f-chieucao').value),
+            can_nang: parseFloat(document.getElementById('f-cannang').value),
+            nhom_mau: document.getElementById('f-nhommau').value,
+            tien_su_benh: document.getElementById('f-tiensu').value.trim(),
+            di_ung: document.getElementById('f-diung').value.trim(),
+            ghi_chu: document.getElementById('f-ghichu').value.trim()
+        };
+
+        try {
+            await Api.auth.updateProfile(payload);
+            mapApiProfile(await Api.auth.getProfile());
+            updateDisplay();
+            closeModal();
+            showToast();
+        } catch (e) {
+            alert(e.message || 'Lưu thất bại');
+        }
+    });
+
+    // ===== MODAL OPEN/CLOSE =====
+    function openModal() {
+        populateForm();
+        document.getElementById('editModal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+        document.getElementById('editModal').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('openEditBtn').addEventListener('click', openModal);
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('cancelModal').addEventListener('click', closeModal);
+    document.getElementById('editModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+
+    // ===== TOAST =====
+    function showToast() {
+        const t = document.getElementById('toast');
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    loadProfile();
+    </script>
+</body>
+</html>
