@@ -1,0 +1,14 @@
+.env
+.env.*
+*.env
+node_modules/
+dist/
+build/
+__pycache__/
+*.pyc
+venv/
+.venv/
+env/
+*.log
+*.bak
+*.zip
